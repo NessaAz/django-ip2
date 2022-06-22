@@ -4,6 +4,7 @@ from cloudinary.models import CloudinaryField
 from django.urls import reverse
 import uuid
 from django.utils.text import slugify
+from django.db.models.signals import post_save, post_delete
 
 
 class Profile(models.Model):
@@ -15,8 +16,18 @@ class Profile(models.Model):
     following = models.ManyToManyField(User, related_name='following', blank=True)
     created = models.DateField(auto_now_add=True)
     
-    def __str__(self):
-        return self.user.username
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+            Profile.objects.create(user=instance)
+
+def save_user_profile(sender, instance, **kwargs):
+       instance.profile.save()
+       
+       post_save.connect(create_user_profile, sender=User)
+       post_save.connect(save_user_profile, sender=User)
+    
+def __str__(self):
+    return self.user.username
     
     
     

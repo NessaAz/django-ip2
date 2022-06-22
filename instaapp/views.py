@@ -39,4 +39,6 @@ def loginuser(request):
             login(request, user_obj)
             return redirect('index') # if you want to redirect same page then, return redirect('this function name in urls.py')
 
-    return render(request, 'outside/loginuser.html', {'form': form})
+    return render(request, 'instaapp/loginuser.html', {'form': form})
+
+

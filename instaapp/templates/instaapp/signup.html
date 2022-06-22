@@ -55,6 +55,8 @@
                     <div class="form-group py-1">
                     <input type="password" class="form-control" name="password1" placeholder="Password" required
                     />
+                    <button class="btn btn-primary btn-sm my-2 btn-block">Sign up</button>
+
                     </div>
                     <div class="text-center mb-2">
                         <p class="m-0 mt-3 p-0"><strong>OR</strong></p>
@@ -78,10 +80,8 @@
                     and
                     <a href="#" class="text-muted"><small><strong>Cookies Policy</strong></small></a>
                     </p>
-                    <button class="btn btn-primary btn-sm my-2 btn-block">Sign up</button>
                 </form>
-            <p class="text-center">Have an account? <a href="#">Log in</a></p>
-            <p class="text-center mt-4">Get the app.</p>
+            <p class="text-center">Have an account? <a href="{% url 'loginuser' %}">Log in</a></p>
             </div>
         </div>
         </div>

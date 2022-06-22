@@ -8,15 +8,22 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.urls import resolve
-from django.db.models import Q
+from django.db.models import Q #for complex queries
 
 def index(request):	
-
-	template = loader.get_template('instaapp/main.html')
-
-	context = {	}
-
-	return HttpResponse(template.render(context, request))
+    user = request.user
+    posts = Stream.objects.filter(user=user)
+    group_ids = []
+    
+    for post in posts:
+        group_ids.append(post.post_id)
+        
+        post_items = Post.objects.filter(id__in=group_ids).all().order_by('-posted')	
+        
+        template = loader.get_template('instaapp/main.html')
+        context = {'post_items': post_items,}
+        
+        return HttpResponse(template.render(context, request))
 
 
 def signup(request):
@@ -95,7 +102,7 @@ def postdetail(request, post_id):
     comments = Comment.objects.filter(post=post).order_by('date')
     if request.user.is_authenticated:
         profile = Profile.objects.get(user=user)
-        if profile.favorites.filter(id=post_id).exists():
+        if profile.favorite.filter(id=post_id).exists():
             favorited = True
             if request.method == 'POST':
                 form = CommentForm(request.POST)
@@ -134,7 +141,7 @@ def favorite(request, post_id):
 
 
 @login_required
-def like(request, post_id):
+def postlike(request, post_id):
     user = request.user
     post = Post.objects.get(id=post_id)
     current_likes = post.likes
@@ -170,24 +177,24 @@ def follow(request, username, option):
                     stream = Stream(post=post, user=request.user, date=post.posted, following=following)
                     stream.save()
                     
-                    return HttpResponseRedirect(reverse('profile', args=[username]))
+                    return HttpResponseRedirect(reverse('profileuser', args=[username]))
     except:
         User.DoesNotExist
                 
-    return HttpResponseRedirect(reverse('profile', args=[username]))    
+    return HttpResponseRedirect(reverse('profileuser', args=[username]))    
 
 
 
-def UserProfile(request, username):
+def profileuser(request, username):
     user = get_object_or_404(User, username=username)
     profile = Profile.objects.get(user=user)
     url_name = resolve(request.path).url_name
     
-    if url_name == 'profile':
+    if url_name == 'profileuser':
         posts = Post.objects.filter(user=user).order_by('-posted')
         
     else:
-        posts = profile.favorites.all()
+        posts = profile.favorite.all()
         posts_count = Post.objects.filter(user=user).count()
         following_count = Follow.objects.filter(follower=user).count()
         followers_count = Follow.objects.filter(following=user).count()
@@ -196,18 +203,18 @@ def UserProfile(request, username):
         page_number = request.GET.get('page')
         posts_paginator = paginator.get_page(page_number)
         
-        template = loader.get_template('profile.html')
-        context = {'posts': posts_paginator,'profile':profile,'following_count':following_count,
+        template = loader.get_template('instaapp/profileuser.html')
+        context = {'posts': posts_paginator,'profileuser':profile,'following_count':following_count,
 		'followers_count':followers_count,'posts_count':posts_count,'follow_status':follow_status,
 		'url_name':url_name,}
         
     return HttpResponse(template.render(context, request))
 
 
-def UserProfileFavorites(request, username):
+def profilefavorite(request, username):
     user = get_object_or_404(User, username=username)
     profile = Profile.objects.get(user=user)
-    posts = profile.favorites.all()
+    posts = profile.favorite.all()
     posts_count = Post.objects.filter(user=user).count()
     following_count = Follow.objects.filter(follower=user).count()
     followers_count = Follow.objects.filter(following=user).count()
@@ -216,7 +223,7 @@ def UserProfileFavorites(request, username):
     page_number = request.GET.get('page')
     posts_paginator = paginator.get_page(page_number)
         
-    template = loader.get_template('profile_favorite.html')
+    template = loader.get_template('instaapp/profilefavorite.html')
 
     context = {
             'posts': posts_paginator,
@@ -230,7 +237,7 @@ def UserProfileFavorites(request, username):
 
 
 @login_required
-def UserSearch(request):
+def searchuser(request):
 	query = request.GET.get("q")
 	context = {}
 	
@@ -242,16 +249,14 @@ def UserSearch(request):
 		page_number = request.GET.get('page')
 		users_paginator = paginator.get_page(page_number)
 
-		context = {
-				'users': users_paginator,
-			}
+		context = {'users': users_paginator,}
 	
-	template = loader.get_template('direct/search_user.html')
+	template = loader.get_template('instaapp/searchuser.html')
 	
 	return HttpResponse(template.render(context, request))
 
 
-def tags(request, tag_slug):
+def tag(request, tag_slug):
     tag = get_object_or_404(Tag, slug=tag_slug)
     posts = Post.objects.filter(tags=tag).order_by('-posted')
     
@@ -275,7 +280,7 @@ def deletenotification(request, noti_id):
     user = request.user
     Notification.objects.filter(id=noti_id, user=user).delete()
     
-    return redirect('show-notifications')
+    return redirect('shownotifications')
 
 
 def countnotification(request):
@@ -283,4 +288,4 @@ def countnotification(request):
     if request.user.is_authenticated:
         count_notifications = Notification.objects.filter(user=request.user, is_seen=False).count()
         
-        return {'count_notifications':count_notifications}    
+        return {'countnotifications':count_notifications}    

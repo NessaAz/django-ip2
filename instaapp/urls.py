@@ -9,4 +9,10 @@ urlpatterns = [
     path('<uuid:post_id>', views.postdetail, name='postdetail'),
     path('notifications/', views.shownotifications, name='show-notifications'),
    	path('<noti_id>/delete', views.deletenotification, name='delete-notification'),
+    path('<username>/', views.profileuser, name='profileuser'),
+    path('<username>/saved', views.profilefavorite, name='profilefavorite'),
+    path('tag/<slug:tag_slug>', views.tag, name='tag'),
+    path('<uuid:post_id>/like', views.postlike, name='postlike'),
+   	path('<uuid:post_id>/favorite', views.favorite, name='favorite'),
+    path('find/', views.searchuser, name='searchuser'),
 ]

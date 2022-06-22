@@ -1,5 +1,5 @@
 from django.template import loader
-from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
+from django.shortcuts import render, HttpResponse, HttpResponseRedirect, redirect, get_object_or_404
 from .models import *
 from .forms import *
 from django.contrib.auth.models import User
@@ -85,3 +85,37 @@ def newpost(request):
 
 
 
+def PostDetails(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    user = request.user
+    profile = Profile.objects.get(user=user)
+    favorited = False
+    comments = Comment.objects.filter(post=post).order_by('date')
+    if request.user.is_authenticated:
+        profile = Profile.objects.get(user=user)
+        if profile.favorites.filter(id=post_id).exists():
+            favorited = True
+            if request.method == 'POST':
+                form = CommentForm(request.POST)
+                if form.is_valid():
+                    comment = form.save(commit=False)
+                    comment.post = post
+                    comment.user = user
+                    comment.save()
+                    return HttpResponseRedirect(reverse('postdetails', args=[post_id]))
+                else:
+                    form = CommentForm()
+                    template = loader.get_template('instaapp/postdetail.html')
+                    context = {
+                            'post':post,
+                            'favorited':favorited,
+                            'profile':profile,
+                            'form':form,
+                            'comments':comments,
+	                    }
+                    return HttpResponse(template.render(context, request))
+                
+                
+                
+                
+                

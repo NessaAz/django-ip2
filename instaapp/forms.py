@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.exceptions import ValidationError
+from .models import *
 
 
 def ForbiddenUsers(value):
@@ -56,3 +57,16 @@ class LoginForm(AuthenticationForm):
     class Meta:
         model = User
         fields = ('username', 'password1')  
+        
+        
+        
+class NewPostForm(forms.ModelForm):
+    content = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=True)
+    caption = forms.CharField(widget=forms.Textarea(attrs={'class': 'input is-medium'}), required=True)
+    tags = forms.CharField(widget=forms.TextInput(attrs={'class': 'input is-medium'}), required=True)
+    
+    class Meta:
+        model = Post
+        fields = ('content', 'caption', 'tags')
+		
+		

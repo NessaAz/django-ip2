@@ -203,3 +203,48 @@ def UserProfile(request, username):
     return HttpResponse(template.render(context, request))
 
 
+def UserProfileFavorites(request, username):
+    user = get_object_or_404(User, username=username)
+    profile = Profile.objects.get(user=user)
+    posts = profile.favorites.all()
+    posts_count = Post.objects.filter(user=user).count()
+    following_count = Follow.objects.filter(follower=user).count()
+    followers_count = Follow.objects.filter(following=user).count()
+        
+    paginator = Paginator(posts, 8)
+    page_number = request.GET.get('page')
+    posts_paginator = paginator.get_page(page_number)
+        
+    template = loader.get_template('profile_favorite.html')
+
+    context = {
+            'posts': posts_paginator,
+            'profile':profile,
+            'following_count':following_count,
+            'followers_count':followers_count,
+            'posts_count':posts_count,
+        }
+
+    return HttpResponse(template.render(context, request))
+
+
+@login_required
+def UserSearch(request):
+	query = request.GET.get("q")
+	context = {}
+	
+	if query:
+		users = User.objects.filter(Q(username__icontains=query))
+
+		#Pagination
+		paginator = Paginator(users, 6)
+		page_number = request.GET.get('page')
+		users_paginator = paginator.get_page(page_number)
+
+		context = {
+				'users': users_paginator,
+			}
+	
+	template = loader.get_template('direct/search_user.html')
+	
+	return HttpResponse(template.render(context, request))

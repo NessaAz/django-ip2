@@ -59,7 +59,6 @@ class LoginForm(AuthenticationForm):
         fields = ('username', 'password1')  
         
         
-        
 class NewPostForm(forms.ModelForm):
     content = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=True)
     caption = forms.CharField(widget=forms.Textarea(attrs={'class': 'input is-medium'}), required=True)
@@ -70,3 +69,10 @@ class NewPostForm(forms.ModelForm):
         fields = ('content', 'caption', 'tags')
 		
 		
+  
+class CommentForm(forms.ModelForm):
+    body = forms.CharField(widget=forms.Textarea(attrs={'class': 'textarea'}), required=True)
+     
+    class Meta:
+        model = Comment
+        fields = ('body',)

@@ -7,4 +7,6 @@ urlpatterns = [
     path('login/',views.loginuser, name='loginuser' ),
    	path('newpost/', views.newpost, name='newpost'),
     path('<uuid:post_id>', views.postdetail, name='postdetail'),
+    path('notifications/', views.shownotifications, name='show-notifications'),
+   	path('<noti_id>/delete', views.deletenotification, name='delete-notification'),
 ]

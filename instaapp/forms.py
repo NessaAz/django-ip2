@@ -25,7 +25,11 @@ def UniqueUser(value):
 
 
 class SignupForm(UserCreationForm):    
+    username = forms.CharField(max_length=20)
     email = forms.EmailField(max_length=200, help_text='Required. Please enter a valid email address.')
+    password1 = forms.CharField(max_length=20)
+    password2 = forms.CharField(max_length=20)
+    
     
     class Meta:
         model = User
@@ -40,9 +44,15 @@ class SignupForm(UserCreationForm):
   
         def clean(self):
             super(SignupForm, self).clean()
-            password = self.cleaned_data.get('password')
-            confirm_password = self.cleaned_data.get('confirm_password')
+            password1 = self.cleaned_data.get('password')
+            password2 = self.cleaned_data.get('confirm_password')
             
-            if password != confirm_password:
+            if password1 != password2:
                 self._errors['password'] = self.error_class(['Passwords do not match. Try again'])
                 return self.cleaned_data
+            
+class LoginForm(AuthenticationForm):
+
+    class Meta:
+        model = User
+        fields = ('username', 'password1')  

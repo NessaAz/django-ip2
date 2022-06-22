@@ -6,4 +6,5 @@ urlpatterns = [
     path('signup/',views.signup, name='signup' ),
     path('login/',views.loginuser, name='loginuser' ),
    	path('newpost/', views.newpost, name='newpost'),
+    path('<uuid:post_id>', views.postdetail, name='postdetail'),
 ]

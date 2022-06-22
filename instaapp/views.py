@@ -85,7 +85,7 @@ def newpost(request):
 
 
 
-def PostDetails(request, post_id):
+def postdetail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     user = request.user
     profile = Profile.objects.get(user=user)
@@ -102,7 +102,7 @@ def PostDetails(request, post_id):
                     comment.post = post
                     comment.user = user
                     comment.save()
-                    return HttpResponseRedirect(reverse('postdetails', args=[post_id]))
+                    return HttpResponseRedirect(reverse('postdetail', args=[post_id]))
                 else:
                     form = CommentForm()
                     template = loader.get_template('instaapp/postdetail.html')

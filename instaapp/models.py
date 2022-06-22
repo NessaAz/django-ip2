@@ -121,3 +121,24 @@ class Notification(models.Model):
 	text_preview = models.CharField(max_length=90, blank=True)
 	date = models.DateTimeField(auto_now_add=True)
 	is_seen = models.BooleanField(default=False)	
+ 
+ 
+ 
+class Follow(models.Model):
+     follower = models.ForeignKey(User,on_delete=models.CASCADE, null=True, related_name='follow_follower')
+     following = models.ForeignKey(User,on_delete=models.CASCADE, null=True, related_name='follow_following')
+     
+def user_follow(sender, instance, *args, **kwargs):
+         follow = instance
+         sender = follow.follower
+         following = follow.following
+         notify = Notification(sender=sender, user=following, notification_type=3)
+         notify.save()
+         
+def user_unfollow(sender, instance, *args, **kwargs):
+    follow = instance
+    sender = follow.follower
+    following = follow.following
+    
+    notify = Notification.objects.filter(sender=sender, user=following, notification_type=3)
+    notify.delete()		

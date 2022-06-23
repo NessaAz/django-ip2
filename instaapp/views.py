@@ -12,8 +12,8 @@ from django.urls import resolve
 from django.db.models import Q #for complex queries
 
 def index(request):	
-    user = request.user
-    posts = Stream.objects.filter(user=user)
+    #user = request.user
+    posts = Stream.objects.all()
     group_ids = []
     
     for post in posts:

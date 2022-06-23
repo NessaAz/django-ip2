@@ -1,9 +1,11 @@
-from pathlib import Path
 import os
+from pathlib import Path
+import dj_database_url
+import django_heroku
 import cloudinary, cloudinary.uploader, cloudinary.api
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 #CLOUDINARY CONFIG
 cloudinary.config( 
@@ -23,7 +25,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
+MODE='prod'
 # Application definition
 INSTALLED_APPS = [
     'cloudinary',
@@ -47,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',    
 ]
 
 ROOT_URLCONF = 'instaproject.urls'
@@ -75,12 +78,17 @@ WSGI_APPLICATION = 'instaproject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'instaapp',
+        'USER': 'vanessa',
+        'PASSWORD': '123',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
-
+DATABASE_URL='postgresql://wjwywjlrhhbwuq:5662a7c2de3a30547183c5c921817c32203a7b34b75a590a8e57df5a884f1f68@ec2-23-23-182-238.compute-1.amazonaws.com:5432/d4cdtat4uameh4'
+DISABLE_COLLECTSTATIC = '1'
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
@@ -115,9 +123,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+                    os.path.join(BASE_DIR, 'static')
+                    ]
+MEDIA_URL = '/images/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+django_heroku.settings(locals())

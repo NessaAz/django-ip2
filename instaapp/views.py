@@ -86,10 +86,10 @@ def newpost(request):
 				t, created = Tag.objects.get_or_create(title=tag)
 				tags_objs.append(t)
 
-			for file in files:
-				file_instance = PostFileContent(file=file, user=user)
-				file_instance.save()
-				files_objs.append(file_instance)
+			# for file in files:
+			# 	file_instance = PostFileContent(file=file, user=user)
+			# 	file_instance.save()
+			# 	files_objs.append(file_instance)
 
 			p, created = Post.objects.get_or_create(caption=caption, user=user)
 			p.tags.set(tags_objs)

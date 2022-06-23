@@ -35,9 +35,9 @@ def __str__(self):
 def user_directory_path(instance, filename):
     return 'user_{0}/{1}'.format(instance.user.id, filename)
 
-class PostFileContent(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='content_owner')
-    file = models.FileField(upload_to=user_directory_path)  
+# class PostFileContent(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='content_owner')
+#     file = models.FileField(upload_to=user_directory_path)  
         
         
 class Tag(models.Model):
@@ -71,7 +71,7 @@ class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     likes = models.IntegerField(default=0)
     tags = models.ManyToManyField(Tag, related_name='tags')
-    content =  models.ManyToManyField(PostFileContent, related_name='contents')    
+    #content =  models.ManyToManyField(PostFileContent, related_name='contents')    
     
     def get_absolute_url(self):
         return reverse('postdetails', args=[str(self.id)])
